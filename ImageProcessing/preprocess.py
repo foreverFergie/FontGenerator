@@ -5,9 +5,10 @@ import os,sys
 from svgtrace import trace
 from pathlib import Path
 import pytesseract
+import glob
 # import fontforge
-import font_class
-import fontTools
+# import font_class
+# import fontTools
 
 
 def clean_up_image(imgpath,showResults=False):
@@ -31,6 +32,7 @@ def clean_up_image(imgpath,showResults=False):
     # normalize image
     norm=np.zeros_like(rawImg)
     norm=cv2.normalize(rawImg,norm,0,255,cv2.NORM_MINMAX)
+
 
     if showResults:
         plt.imshow(norm)
@@ -76,7 +78,7 @@ def clean_up_image(imgpath,showResults=False):
     return dilate
 
 
-def convertToVector(bitmap):
+def convertToVector(bitmap,char):
     """
 
     :param bitmap: cv2/numpy image
@@ -84,6 +86,7 @@ def convertToVector(bitmap):
     """
     # DIR=str(Path(__file__).resolve().parent)
     temp="temp_vector.png"
+    svgName=char+''
     cv2.imwrite(temp,bitmap)
     passPath=os.path.abspath(temp)
     svg=trace(passPath,True)
@@ -98,32 +101,88 @@ def getCharacter(bitmap):
     :param bitmap:
     :return:
     """
+    let=pytesseract.image_to_string(bitmap,config='--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    print(type(let))
+    print(let[0])
 
-    print(pytesseract.image_to_string(bitmap))
 
 
-def crop(imgPath):
+def crop(binImg):
     """
-
-    :param imgPath:
-    :return:
+    crop binary image to remove as much white background as possible
+    finds the top most, bottom most, left most, and right most black value and crops out everything
+    around said values
+    :param binImg: binary image from clean_up_image
+    :return: cropped img
     """
-    rawImg=cv2.imread(imgPath)
+    # rawImg=cv2.imread(imgPath)
+
+    # crop=binImg
+    # print(binImg.shape)
+    height,width =binImg.shape
+
+    # find top most black value
+    top=0
+    search=True
+    while search:
+        black=np.any(binImg[top,:]==0)
+        if black:
+            search=False
+        else:
+            top+=1
 
 
-#     get coordinates from web gui
+    # find bottom most black value
+    bottom=height-1
+    search=True
+    while search:
+        black = np.any(binImg[bottom,:] == 0)
+        if black:
+            search = False
+        else:
+            bottom -= 1
 
-    (x,y)=(0,0)
-    (height,width)=(200,200)
+    left=0
+    search=True
+    while search:
+        black = np.any(binImg[:,left] == 0)
+        if black:
+            search = False
+        else:
+            left += 1
+
+    right=width-1
+    search=True
+    while search:
+        black = np.any(binImg[:,right] == 0)
+        if black:
+            search = False
+        else:
+            right -= 1
+
+    newHeight=bottom-top+1
+    newWidth=right-left+1
+
+    # cropImg=np.zeros_like(newHeight,newWidth)
+
+    cropImg=binImg[top:bottom+1,left:right+1]
+
+
+    plt.imshow(cropImg)
+    plt.show()
+    return cropImg
+
+
+
 
 
 
 
 if __name__ == "__main__":
-    base=os.curdir
+    # base=os.curdir
     # base=sys.prefix
     # print("Current directory"+base)
-
+    #
     # print("svdsldnvlasknclndlvn'\n")
     # a_file="C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/a_erinn.jpg"
     # filepath="C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/ErinnHandWrite.jpg"
@@ -131,15 +190,32 @@ if __name__ == "__main__":
     #
     # bit1=clean_up_image(filepath)
     # bit2=clean_up_image(filepath_2)
-    # a=clean_up_image(a_file,True)
+
+    testUpper = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Upper"
+    testLower = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Lower"
+    testNums = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/nums"
+
+
+    for imgName in glob.glob(testUpper +'/*.jpg'):
+        temp=clean_up_image(imgName)
+        cropped = crop(temp)
+        # getCharacter(temp)
+        char=input("letter: ")
+
+        convertToVector(cropped)
+
+
+    # a=clean_up_image(a_file)
     # getCharacter(a)
     #
     #
     # convertToVector(bit1)
     test="C:/Users/fergusone1/Downloads/Kitten-Thin-19464/Web Fonts/Kitten Thin/Kitten-Thin.ttf"
 
+    # crop(a)
 
-    fontTools.
+
+    # fontTools.
 
 
 
