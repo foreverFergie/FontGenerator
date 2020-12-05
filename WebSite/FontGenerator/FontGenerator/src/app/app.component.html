@@ -1,0 +1,19 @@
+<nb-layout withScroll [class.header-hidden]="!(layout$ | async)?.header">
+
+  <nb-layout-header *ngIf="(layout$ | async)?.header" class="Header header">
+    <div class="space Space1 space1" >
+      <p class="Text6 text6 text-bold text-alignment-left text-transform-none paragraph" ngClass="text-basic">Fontastic</p>
+    </div>
+  </nb-layout-header>
+
+  <nb-sidebar *ngIf="(layout$ | async)?.sidebar" class="Sidebar sidebar" responsive="true" [collapsedBreakpoints]="['xs', 'is', 'sm']" [compactedBreakpoints]="[]">
+    <div class="space SidebarSpace sidebar-space" >
+      <nb-menu class="Menu menu" [items]="items" ngClass="menu-text-basic"></nb-menu>
+    </div>
+  </nb-sidebar>
+
+  <nb-layout-column [style.padding]="padding$ | async">
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+</nb-layout>

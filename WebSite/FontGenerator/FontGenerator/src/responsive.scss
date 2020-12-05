@@ -1,0 +1,61 @@
+$breakpoints: (
+  lg: 1024px,
+  md: 768px,
+  sm: 480px,
+  xs: 320px,
+);
+
+// Generates style content based on passed breakpoint
+@mixin media-query($mq-breakpoint, $mq-breakpoints: $breakpoints) {
+
+  @if map-has-key($mq-breakpoints, $mq-breakpoint) {
+    @media (max-width: #{map-get($mq-breakpoints, $mq-breakpoint)}) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@function nb-get-breakpoints() {
+  @return 'xl', 'lg', 'md', 'sm', 'xs';
+}
+
+@function nb-get-btn-appearances() {
+  @return 'filled', 'outline', 'ghost', 'hero';
+}
+
+@mixin install-responsive-styles() {
+  @each $bp in nb-get-breakpoints() {
+    // Use mixin to add content to media queries
+    @include media-query($bp) {
+      @each $size in nb-get-sizes() {
+        @include mq-button($bp, $size);
+      }
+    }
+  }
+}
+
+@mixin mq-button($bp, $size) {
+
+  // Add `appearance` to selector to override default `medium` size value
+  @each $appearance in nb-get-btn-appearances() {
+    [nbButton].appearance-#{$appearance} {
+      &.size-#{$bp}-#{$size} {
+        font-size: nb-theme(button-#{$size}-text-font-size);
+        line-height: nb-theme(button-#{$size}-text-line-height);
+        padding: nb-theme(button-filled-#{$size}-padding);
+
+        > nb-icon {
+          font-size: nb-theme(button-#{$size}-text-font-size);
+          height: nb-theme(button-#{$size}-icon-size);
+          width: nb-theme(button-#{$size}-icon-size);
+        }
+        
+        &.iconPlacement-#{$bp}-center {
+          padding: nb-theme(icon-button-#{$appearance}-#{$size}-padding);
+        }
+      }
+    }
+  }
+}

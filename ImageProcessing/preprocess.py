@@ -71,14 +71,14 @@ def clean_up_image(imgpath,showResults=False):
     # thres=cv2.adaptiveThreshold(norm,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,5,2)
 
     # plt.imshow(thres)
-    # plt.show()
-    binName="binary_"+fileName
-    cv2.imwrite(binName,dilate)
+    # # plt.show()
+    # binName="binary_"+fileName
+    # cv2.imwrite(binName,dilate)
 
     return dilate
 
 
-def convertToVector(bitmap,char):
+def convertToVector(bitmap,char,tempDir):
     """
 
     :param bitmap: cv2/numpy image
@@ -86,11 +86,11 @@ def convertToVector(bitmap,char):
     """
     # DIR=str(Path(__file__).resolve().parent)
     temp="temp_vector.png"
-    svgName=char+''
+    svgName='temp/'+char+'.svg'
     cv2.imwrite(temp,bitmap)
     passPath=os.path.abspath(temp)
     svg=trace(passPath,True)
-    svg_save=open("temp.svg","w")
+    svg_save=open(svgName,"w")
     svg_save.write(svg)
     svg_save.close()
     print("SVG saved to: temp.svg")
@@ -173,9 +173,27 @@ def crop(binImg):
     return cropImg
 
 
+def checkFileExtension(listImgs):
 
+    """
+    Check to see if imgs submitted are bitmaps or svgs
+    :param listImgs: list of img filenames
+    :return true if bitmaps, false if svgs
 
+    """
 
+    bitmaps=True
+
+    for file in listImgs:
+        dir,file=os.path.split(file)
+
+        name,ext=os.path.splitext(file)
+        if ext=='.svg':
+            bitmaps=False
+            break
+
+    return bitmaps
+    
 
 
 if __name__ == "__main__":
@@ -194,15 +212,24 @@ if __name__ == "__main__":
     testUpper = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Upper"
     testLower = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Lower"
     testNums = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/nums"
+    svgTemps="C:/datafile/Fall2020/Senior Project/FontGenerator/ImageProcessing/temp"
+    
+    if not os.path.isdir(svgTemps):
+        print("Creating temp directory\n")
+        os.mkdir('temp')
 
 
+    test=checkFileExtension(glob.glob(svgTemps+'/*'))
+    print(test)
+    num=0
     for imgName in glob.glob(testUpper +'/*.jpg'):
         temp=clean_up_image(imgName)
         cropped = crop(temp)
         # getCharacter(temp)
-        char=input("letter: ")
+        # char=input("letter: ")
 
-        convertToVector(cropped)
+        convertToVector(cropped,str(num),svgTemps)
+        num+=1
 
 
     # a=clean_up_image(a_file)

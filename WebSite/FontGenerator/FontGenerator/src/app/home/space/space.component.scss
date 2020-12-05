@@ -1,0 +1,56 @@
+:host {
+
+  height: 100%;
+  flex-grow: 1;
+  flex-basis: 0;
+  display: block;
+  
+  .text7 {
+    font-size: 22px;
+    line-height: initial;
+    margin: 10px;
+  }
+    
+  .text71 {
+    font-size: 18px;
+    line-height: initial;
+    margin: 10px;
+  }
+    
+  .space15 {
+    height: 249px;
+    width: 933px;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: visible;
+    background-color: unset;
+    background-size: auto;
+  }
+    
+  .space151 {
+    height: 555px;
+    width: 933px;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: visible;
+    background-color: unset;
+    background-size: auto;
+  }
+    
+  .space-component {
+    height: 100%;
+    flex-grow: 1;
+    flex-basis: 0;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: center;
+    overflow: visible;
+    background-color: unset;
+    background-size: cover;
+  }
+  
+}
