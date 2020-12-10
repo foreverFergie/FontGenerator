@@ -6,6 +6,7 @@ from svgtrace import trace
 from pathlib import Path
 import pytesseract
 import glob
+import json
 # import fontforge
 # import font_class
 # import fontTools
@@ -93,7 +94,9 @@ def convertToVector(bitmap,char,tempDir):
     svg_save=open(svgName,"w")
     svg_save.write(svg)
     svg_save.close()
-    print("SVG saved to: temp.svg")
+    # print("SVG saved to: "+char+".svg")
+    print('.')
+    return svgName
 
 def getCharacter(bitmap):
     """
@@ -168,8 +171,8 @@ def crop(binImg):
     cropImg=binImg[top:bottom+1,left:right+1]
 
 
-    plt.imshow(cropImg)
-    plt.show()
+    # plt.imshow(cropImg)
+    # plt.show()
     return cropImg
 
 
@@ -194,6 +197,13 @@ def checkFileExtension(listImgs):
 
     return bitmaps
     
+def generateEmptyDictionary(empty):
+    
+    for elem in range(ord('!'),ord('~')):
+        char=chr(elem)
+        empty[char]=""
+    
+    
 
 
 if __name__ == "__main__":
@@ -213,37 +223,123 @@ if __name__ == "__main__":
     testLower = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Lower"
     testNums = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/nums"
     svgTemps="C:/datafile/Fall2020/Senior Project/FontGenerator/ImageProcessing/temp"
+
+
+
+    # *********** hard coded for testing**************
     
     if not os.path.isdir(svgTemps):
         print("Creating temp directory\n")
         os.mkdir('temp')
 
+    svgDict={}
+    generateEmptyDictionary(svgDict)
+    
+    # print(svgDict.keys())
 
-    test=checkFileExtension(glob.glob(svgTemps+'/*'))
-    print(test)
-    num=0
+    # add uppercase
+    num=65
     for imgName in glob.glob(testUpper +'/*.jpg'):
         temp=clean_up_image(imgName)
         cropped = crop(temp)
         # getCharacter(temp)
         # char=input("letter: ")
 
-        convertToVector(cropped,str(num),svgTemps)
+        # ************get character here from user
+
+        # using hardcoded value for testing
+        charTemp=chr(num)
+
+        if charTemp.isupper():
+            svgFile=charTemp.lower()+charTemp.lower()
+        else:
+            svgFile=charTemp
+
+        save=convertToVector(cropped,svgFile,svgTemps)
+        svgDict[charTemp]=save
+        
+        
+        num+=1
+
+     # add lowercase
+    num=97
+    for imgName in glob.glob(testLower +'/*.jpg'):
+        temp=clean_up_image(imgName)
+        cropped = crop(temp)
+        # getCharacter(temp)
+        # char=input("letter: ")
+
+        # ************get character here from user
+
+        # using hardcoded value for testing
+        charTemp=chr(num)
+
+        if charTemp.isupper():
+            svgFile=charTemp.lower()+charTemp.lower()
+        else:
+            svgFile=charTemp
+
+        save=convertToVector(cropped,svgFile,svgTemps)
+        svgDict[charTemp]=save
+        
+        
         num+=1
 
 
-    # a=clean_up_image(a_file)
-    # getCharacter(a)
-    #
-    #
-    # convertToVector(bit1)
-    test="C:/Users/fergusone1/Downloads/Kitten-Thin-19464/Web Fonts/Kitten Thin/Kitten-Thin.ttf"
+     # add uppercase
+    num=48
+    for imgName in glob.glob(testNums +'/*.jpg'):
+        temp=clean_up_image(imgName)
+        cropped = crop(temp)
+        # getCharacter(temp)
+        # char=input("letter: ")
 
-    # crop(a)
+        # ************get character here from user
+
+        # using hardcoded value for testing
+        charTemp=chr(num)
+
+        if charTemp.isupper():
+            svgFile=charTemp.lower()+charTemp.lower()
+        else:
+            svgFile=charTemp
+
+        save=convertToVector(cropped,svgFile,svgTemps)
+        svgDict[charTemp]=save
+        
+        
+        num+=1
+    # upperSVG=glob.glob(svgTemps+"/*.svg")
+
+    # create dictionary with filenames and what character they are
+
+    # svgDict={}
+    # generateEmptyDictionary(svgDict)
+
+    outName={}
+
+    outName['filename']="erinn.ttf"
+    outName['save']='erinn'
 
 
-    # fontTools.
 
+    # print(svgDict.items())
+
+
+    # create json file
+
+    jsonOut={}
+    jsonOut['glyphs']=svgDict
+    jsonOut['output']=outName
+
+
+    # print(jsonOut.items())
+    jsonOb=json.dumps(jsonOut,indent=4)
+
+    with open("processedSVG.json","w") as outfile:
+        outfile.write(jsonOb)
+    
+    os.system('cmd /k "fontforge -lang=py -script font_class.py"')    
 
 
 
