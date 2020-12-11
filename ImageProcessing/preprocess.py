@@ -4,12 +4,9 @@ import matplotlib.pyplot as plt
 import os,sys
 from svgtrace import trace
 from pathlib import Path
-import pytesseract
+# import pytesseract
 import glob
 import json
-# import fontforge
-# import font_class
-# import fontTools
 
 
 def clean_up_image(imgpath,showResults=False):
@@ -37,7 +34,7 @@ def clean_up_image(imgpath,showResults=False):
 
     if showResults:
         plt.imshow(norm)
-        plt.show()
+        # plt.show()
 
     gaus=cv2.GaussianBlur(norm,(9,9),0)
 
@@ -98,15 +95,15 @@ def convertToVector(bitmap,char,tempDir):
     print('.')
     return svgName
 
-def getCharacter(bitmap):
-    """
+# def getCharacter(bitmap):
+#     """
 
-    :param bitmap:
-    :return:
-    """
-    let=pytesseract.image_to_string(bitmap,config='--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    print(type(let))
-    print(let[0])
+#     :param bitmap:
+#     :return:
+#     """
+#     let=pytesseract.image_to_string(bitmap,config='--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+#     print(type(let))
+#     print(let[0])
 
 
 
@@ -219,13 +216,20 @@ if __name__ == "__main__":
     # bit1=clean_up_image(filepath)
     # bit2=clean_up_image(filepath_2)
 
-    testUpper = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Upper"
-    testLower = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Lower"
-    testNums = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/nums"
-    svgTemps="C:/datafile/Fall2020/Senior Project/FontGenerator/ImageProcessing/temp"
+    curr=os.path.dirname(os.path.realpath(__file__))
 
+    # print(curr)
+    base,fold=os.path.split(curr)
 
+    # testUpper = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Upper"
+    # testLower = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/Lower"
+    # testNums = "C:/datafile/Fall2020/Senior Project/FontGenerator/TestImages/IndividualGlyphs/nums"
+    # svgTemps="C:/datafile/Fall2020/Senior Project/FontGenerator/ImageProcessing/temp"
 
+    svgTemps=os.path.join(curr,'temp')
+    testUpper=os.path.join(base,'TestImages/IndividualGlyphs/Upper')
+    testLower=os.path.join(base,'TestImages/IndividualGlyphs/Lower')
+    testNums=os.path.join(base,'TestImages/IndividualGlyphs/nums')
     # *********** hard coded for testing**************
     
     if not os.path.isdir(svgTemps):
@@ -238,6 +242,7 @@ if __name__ == "__main__":
     # print(svgDict.keys())
 
     # add uppercase
+    
     num=65
     for imgName in glob.glob(testUpper +'/*.jpg'):
         temp=clean_up_image(imgName)
@@ -318,9 +323,9 @@ if __name__ == "__main__":
 
     outName={}
 
-    outName['filename']="erinn.ttf"
+    outName['filename']="erinn.ttf","erinn.otf","erinn.woff"
     outName['save']='erinn'
-
+    outName['family']='Erinn\'s Handwritting'
 
 
     # print(svgDict.items())
@@ -339,9 +344,10 @@ if __name__ == "__main__":
     with open("processedSVG.json","w") as outfile:
         outfile.write(jsonOb)
     
+
     os.system('cmd /k "fontforge -lang=py -script font_class.py"')    
 
-
+    
 
 
 

@@ -47,12 +47,28 @@ def addSVGs(fontFile,fileDict):
 def generate(filename,font):
 
     name=filename.get('filename')
-    font.fontname=filename.get('save')
-    print("writing file: "+name)
 
-    font.generate(name)
+    if type(name) is list:
+        for elem in name:
+            
+            font.fullname=filename.get('save')
+            font.fontname=filename.get('save')
+            font.familyname=filename.get('family')
+            print("writing file: "+elem)
+            
+            font.generate(elem)
+    else:
 
-    pass
+        font.fullname=filename.get('save')
+        font.fontname=filename.get('save')
+        font.familyname=filename.get('family')
+        print("writing file: "+name)
+        
+        font.generate(name)
+    # delete temp folder
+
+    font.save()
+    font.close()
 
 
 if __name__ == "__main__":
@@ -75,5 +91,6 @@ if __name__ == "__main__":
     addSVGs(baseFont,filenames)
 
     generate(data['output'],baseFont)
+
     
     
